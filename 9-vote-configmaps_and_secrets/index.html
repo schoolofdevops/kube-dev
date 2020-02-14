@@ -136,6 +136,8 @@
         
             <li><a class="toctree-l4" href="#note-automatic-updation-of-deployments-on-configmap-updates">Note: Automatic Updation of deployments on ConfigMap  Updates</a></li>
         
+            <li><a class="toctree-l4" href="#adding-http-authentication-with-secrets">Adding HTTP Authentication with Secrets</a></li>
+        
         </ul>
     
 
@@ -360,6 +362,72 @@ kubectl  rollout status deploy/vote
 <li>To update, create a new configMaps and do not update the previous one. Treat it as immutable.</li>
 <li>Update deployment spec to use the new version of the configMaps. This will ensure immediate update.</li>
 </ul>
+<h2 id="adding-http-authentication-with-secrets">Adding HTTP Authentication with Secrets</h2>
+<p>Lets create  htpasswd spec as Secret   </p>
+<pre><code>  apt install -yq apache2-utils
+  htpasswd -c auth devops
+</code></pre>
+
+<p>Or use <a href="http://www.htaccesstools.com/htpasswd-generator/">Online htpasswd generator</a> to generate a htpasswd spec. if you use the online generator, copy the contents to a file by name <code>auth</code> in the current directory.</p>
+<p>Then generate the secret as,</p>
+<p>```
+  kubectl create secret generic mysecret --from-file auth</p>
+<p>kubectl get secret</p>
+<p>kubectl describe secret mysecret
+  ```</p>
+<p>And then add annotations to the ingress object so that it is read by the ingress controller to update configurations.</p>
+<p><code>file: vote-ing.yaml</code></p>
+<p>```
+  apiVersion: extensions/v1beta1
+  kind: Ingress
+  metadata:
+    name: vote
+    annotations:
+      kubernetes.io/ingress.class: traefik
+      ingress.kubernetes.io/auth-type: "basic"
+      ingress.kubernetes.io/auth-secret: "mysecret"
+  spec:
+    rules:
+      - host: vote.example.com
+        http:
+          paths:
+            - path: /
+              backend:
+                serviceName: vote
+                servicePort: 82
+      - host: results.example.com
+        http:
+          paths:
+            - path: /
+              backend:
+                serviceName: results
+                servicePort: 81</p>
+<p>```</p>
+<p>where,</p>
+<pre><code>*  *ingress.kubernetes.io/auth-type: "basic"* defines authentication type that needs to be added.
+*  *ingress.kubernetes.io/auth-secret: "mysecret"* refers to the secret created earlier.
+</code></pre>
+<p>apply</p>
+<p><code>kubectl apply -f vote-ing.yaml
+  kubectl get ing/vote -o yaml</code></p>
+<p>Observe the annotations field. No sooner than you apply this spec, ingress controller reads the event and a basic http authentication is set with the secret you added.</p>
+<p>```bash</p>
+<pre><code>                    +----------+
+     +--update----&gt; | traefik  |
+     |              |  configs |
+     |              +----------+
++----+----+--+            ^
+| ingress    |            :
+| controller |            :
++----+-------+            :
+     |              +-----+-------+
+     +---watch----&gt; | ingress     | &lt;------- user
+                    | annotations |
+                    +-------------+
+</code></pre>
+<p>```</p>
+<p>And if you visit traefik's dashboard and go to the details tab, you should see the basic authentication section enabled as in the diagram below.</p>
+<p><img alt="Name Based Routing" src="../images/domain-name.png" /></p>
               
             </div>
           </div>

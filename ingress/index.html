@@ -323,19 +323,14 @@ kubectl apply -f https://raw.githubusercontent.com/containous/traefik/v1.7/examp
 </code></pre>
 
 <p>Validate</p>
-<pre><code>kubectl get svc,ds,pods -n kube-system  --selector='k8s-app=traefik-ingress-lb'
+<pre><code>kubectl get svc,ds,pods -n kube-system  | grep -i traefik
 </code></pre>
 
-<p>[output]</p>
-<pre><code>NAME                              TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)           AGE
-service/traefik-ingress-service   ClusterIP   10.109.182.203   &lt;none&gt;        80/TCP,8080/TCP   11h
-
-NAME                                              DESIRED   CURRENT   READY     UP-TO-DATE   AVAILABLE   NODE SELECTOR   AGE
-daemonset.extensions/traefik-ingress-controller   2         2         2         2            2           &lt;none&gt;          11h
-
-NAME                                   READY     STATUS    RESTARTS   AGE
-pod/traefik-ingress-controller-bmwn7   1/1       Running   0          11h
-pod/traefik-ingress-controller-vl296   1/1       Running   0          11h
+<p>[sample output]</p>
+<pre><code>service/traefik-ingress-service   ClusterIP   10.102.73.90   &lt;none&gt;        80/TCP,8080/TCP          72s
+daemonset.apps/traefik-ingress-controller   2         2         2       2            2           &lt;none&gt;                        72s
+pod/traefik-ingress-controller-gnfwt           1/1     Running   0          71s
+pod/traefik-ingress-controller-sxts6           1/1     Running   0          71s
 </code></pre>
 
 <p>You would notice that the ingress controller is started on all nodes (except managers). Visit any of the nodes 8080 port e.g. http://IPADDRESS:8080 to see  traefik's management UI.</p>
@@ -356,34 +351,39 @@ pod/traefik-ingress-controller-vl296   1/1       Running   0          11h
 </code></pre>
 
 <p><code>file: vote-ing.yaml</code></p>
-<pre><code>apiVersion: extensions/v1beta1
+<pre><code>---
+apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: vote
+  namespace: instavote
   annotations:
     kubernetes.io/ingress.class: traefik
 spec:
   rules:
-    - host: vote.example.com
-      http:
-        paths:
-          - path: /
-            backend:
-              serviceName: vote
-              servicePort: 80
-    - host: results.example.com
-      http:
-        paths:
-          - path: /
-            backend:
-              serviceName: results
-              servicePort: 80
+  - host: vote.example.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: vote
+          servicePort: 80
+  - host: results.example.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: results
+          servicePort: 80
 </code></pre>
 
 <p>And apply</p>
 <pre><code>kubectl get ing
 kubectl apply -f vote-ing.yaml --dry-run
 kubectl apply -f vote-ing.yaml
+
+kubectl get ing
+kubectl describe ing vote
 </code></pre>
 
 <p>Since the ingress controller  is constantly monitoring for the ingress objects, the moment it detects, it connects with traefik and creates a rule as follows.</p>
@@ -449,78 +449,6 @@ kubectl apply -f vote-ing.yaml
 <li>xxx.xxx.xxx.xxx is the actual IP address of one of the nodes running traefik.</li>
 </ul>
 <p>And then access the app urls using http://vote.example.com or http://results.example.com</p>
-<p><img alt="Name Based Routing" src="../images/domain-name.png" /></p>
-<h3 id="adding-http-authentication-with-annotations">Adding HTTP Authentication with Annotations</h3>
-<h4 id="creating-htpasswd-spec-as-secret">Creating htpasswd spec as Secret</h4>
-<pre><code>apt install -yq apache2-utils
-htpasswd -c auth devops
-</code></pre>
-
-<p>Or use <a href="http://www.htaccesstools.com/htpasswd-generator/">Online htpasswd generator</a> to generate a htpasswd spec. if you use the online generator, copy the contents to a file by name <code>auth</code> in the current directory.</p>
-<p>Then generate the secret as,</p>
-<pre><code>kubectl create secret generic mysecret --from-file auth
-
-kubectl get secret
-
-kubectl describe secret mysecret
-</code></pre>
-
-<p>And then add annotations to the ingress object so that it is read by the ingress controller to update configurations.</p>
-<p><code>file: vote-ing.yaml</code></p>
-<pre><code>apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: vote
-  annotations:
-    kubernetes.io/ingress.class: traefik
-    ingress.kubernetes.io/auth-type: &quot;basic&quot;
-    ingress.kubernetes.io/auth-secret: &quot;mysecret&quot;
-spec:
-  rules:
-    - host: vote.example.com
-      http:
-        paths:
-          - path: /
-            backend:
-              serviceName: vote
-              servicePort: 82
-    - host: results.example.com
-      http:
-        paths:
-          - path: /
-            backend:
-              serviceName: results
-              servicePort: 81
-
-</code></pre>
-
-<p>where,</p>
-<ul>
-<li><em>ingress.kubernetes.io/auth-type: "basic"</em> defines authentication type that needs to be added.</li>
-<li><em>ingress.kubernetes.io/auth-secret: "mysecret"</em> refers to the secret created earlier.</li>
-</ul>
-<p>apply</p>
-<pre><code>kubectl apply -f vote-ing.yaml
-kubectl get ing/vote -o yaml
-</code></pre>
-
-<p>Observe the annotations field. No sooner than you apply this spec, ingress controller reads the event and a basic http authentication is set with the secret you added.</p>
-<pre><code class="bash">
-                      +----------+
-       +--update----&gt; | traefik  |
-       |              |  configs |
-       |              +----------+
-  +----+----+--+            ^
-  | ingress    |            :
-  | controller |            :
-  +----+-------+            :
-       |              +-----+-------+
-       +---watch----&gt; | ingress     | &lt;------- user
-                      | annotations |
-                      +-------------+
-</code></pre>
-
-<p>And if you visit traefik's dashboard and go to the details tab, you should see the basic authentication section enabled as in the diagram below.</p>
 <p><img alt="Name Based Routing" src="../images/domain-name.png" /></p>
 <h5 id="reading">Reading</h5>
 <ul>
