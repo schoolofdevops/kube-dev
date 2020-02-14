@@ -9,7 +9,7 @@ Concepts related to Kubernetes Services are depicted in the following diagram,
 ![kubernetes service.\label{fig:captioned_image}](images/k8s_service.jpg)
 
 
-### Publishing external facing app with NodePort
+## Publishing external facing app with NodePort
 
 Kubernetes comes with four types of services viz.
 
@@ -106,14 +106,14 @@ Sample output will be:
 If you refresh the page, you should also notice its sending traffic to diffent pod each time, in round robin fashion.
 
 
-#### Exercises  
+### Exercises  
 
   * Change the selector criteria to use a non existant label. Use `kubectl edit svc./vote` to update and apply the configuration. Observe the output of describe command and check the endpoints. Do you see any ?  How are  selectors and pod labels related ?
   * Observe the number of endpoints. Then change the scale of replicas created by the replicasets. Does it have any effect on the number of endpoints ?    
 
 
 
-#### Services Under the Hood
+## Services Under the Hood
 
 Lets traverse the route of the **network packet** that comes in on port 30000 on any node in your cluster.
 
@@ -153,13 +153,14 @@ iptables -nvL -t nat  | grep KUBE-SEP-BAI3HQ7SV7RZ2CI6  -A 3
 
 [output]
 ```
-pkts bytes target     prot opt in     out     source               destination
-    0     0 KUBE-MARK-MASQ  all  --  *      *       10.32.0.6            0.0.0.0/0            /* instavote/vote: */
-    0     0 DNAT       tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            /* instavote/vote: */ tcp to:10.32.0.6:80
+Chain KUBE-SEP-CIGDXW6UBWPOBOR6 (1 references)
+ pkts bytes target     prot opt in     out     source               destination
+    0     0 KUBE-MARK-MASQ  all  --  *      *       192.168.115.135      0.0.0.0/0
+    0     0 DNAT       tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            tcp to:192.168.115.135:80
 --
 ```
 
-where the packet is being forwarded to 10.32.0.6, which should corraborate with the ip of the pod
+where the packet is being forwarded to 192.168.115.135, which should corroborate with the ip of the pod
 
 e.g.
 
@@ -167,14 +168,13 @@ e.g.
 kubectl get pods -o wide
 
 NAME         READY     STATUS    RESTARTS   AGE       IP          NODE
-vote-58bpv   1/1       Running   0          1h        10.32.0.6   k-02
-vote-986cl   1/1       Running   0          1h        10.38.0.5   k-03
-vote-9rrfz   1/1       Running   0          1h        10.38.0.4   k-03
-vote-dx8f4   1/1       Running   0          1h        10.32.0.4   k-02
-vote-qxmfl   1/1       Running   0          1h        10.32.0.5   k-02
+vote-9crwd              1/1     Running   0          44m   192.168.84.69     kube-02   <none>           <none>
+vote-pdcfk              1/1     Running   0          44m   192.168.115.135   kube-03   <none>           <none>
+vote-tpk8x              1/1     Running   0          44m   192.168.115.134   kube-03   <none>           <none>
+vote-zbpls              1/1     Running   0          44m   192.168.84.68     kube-02   <none>           <none>
 ```
 
- 10.32.0.6 matches ip of vote-58bpv  
+ 192.168.115.135 matches ip of vote-pdcfk
 
 
 to check how the packet is routed next use,
@@ -187,20 +187,21 @@ route -n
 ```
 Kernel IP routing table
 Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
-0.0.0.0         206.189.144.1   0.0.0.0         UG    0      0        0 eth0
+0.0.0.0         165.22.96.1     0.0.0.0         UG    0      0        0 eth0
 10.15.0.0       0.0.0.0         255.255.0.0     U     0      0        0 eth0
-10.32.0.0       0.0.0.0         255.240.0.0     U     0      0        0 weave
+165.22.96.0     0.0.0.0         255.255.240.0   U     0      0        0 eth0
 172.17.0.0      0.0.0.0         255.255.0.0     U     0      0        0 docker0
-206.189.144.0   0.0.0.0         255.255.240.0   U     0      0        0 eth0
-
+192.168.84.64   165.22.109.70   255.255.255.192 UG    0      0        0 tunl0
+192.168.115.128 178.128.53.126  255.255.255.192 UG    0      0        0 tunl0
+192.168.207.128 0.0.0.0         255.255.255.192 U     0      0        0 *
 ```
 
-where, 10.32.0.0 is going over **weave** interface.
+where, 192.168.115.128 is going over **tunl0** interface created by calico.
 
 
 
 
-### Exposing app with ExternalIP
+## Exposing app with ExternalIP
 
 Observe the output of service list, specifically note the **EXTERNAL-IP** colum in the output.
 
