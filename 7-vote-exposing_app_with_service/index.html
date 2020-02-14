@@ -118,6 +118,8 @@
         
             <li><a class="toctree-l4" href="#publishing-external-facing-app-with-nodeport">Publishing external facing app with NodePort</a></li>
         
+            <li><a class="toctree-l4" href="#services-under-the-hood">Services Under the Hood</a></li>
+        
             <li><a class="toctree-l4" href="#exposing-app-with-externalip">Exposing app with ExternalIP</a></li>
         
             <li><a class="toctree-l4" href="#internal-service-discovery">Internal Service Discovery</a></li>
@@ -298,7 +300,7 @@
 <p>In this lab, you would not only publish the application deployed with replicaset earlier, but also learn about the load balancing and service discovery features offered by kubernetes.</p>
 <p>Concepts related to Kubernetes Services are depicted in the following diagram,</p>
 <p><img alt="kubernetes service.\label{fig:captioned_image}" src="../images/k8s_service.jpg" /></p>
-<h3 id="publishing-external-facing-app-with-nodeport">Publishing external facing app with NodePort</h3>
+<h2 id="publishing-external-facing-app-with-nodeport">Publishing external facing app with NodePort</h2>
 <p>Kubernetes comes with four types of services viz.</p>
 <ul>
 <li>ClusterIP</li>
@@ -372,12 +374,12 @@ Events:                   &lt;none&gt;
 <p>Sample output will be:</p>
 <p><img alt="Vote" src="../images/vote-rc.png" /></p>
 <p>If you refresh the page, you should also notice its sending traffic to diffent pod each time, in round robin fashion.</p>
-<h4 id="exercises">Exercises</h4>
+<h3 id="exercises">Exercises</h3>
 <ul>
 <li>Change the selector criteria to use a non existant label. Use <code>kubectl edit svc./vote</code> to update and apply the configuration. Observe the output of describe command and check the endpoints. Do you see any ?  How are  selectors and pod labels related ?</li>
 <li>Observe the number of endpoints. Then change the scale of replicas created by the replicasets. Does it have any effect on the number of endpoints ?    </li>
 </ul>
-<h4 id="services-under-the-hood">Services Under the Hood</h4>
+<h2 id="services-under-the-hood">Services Under the Hood</h2>
 <p>Lets traverse the route of the <strong>network packet</strong> that comes in on port 30000 on any node in your cluster.</p>
 <pre><code>iptables -nvL -t nat  
 iptables -nvL -t nat  | grep 30000
@@ -407,25 +409,25 @@ iptables -nvL -t nat  | grep KUBE-SEP-BAI3HQ7SV7RZ2CI6  -A 3
 </code></pre>
 
 <p>[output]</p>
-<pre><code>pkts bytes target     prot opt in     out     source               destination
-    0     0 KUBE-MARK-MASQ  all  --  *      *       10.32.0.6            0.0.0.0/0            /* instavote/vote: */
-    0     0 DNAT       tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            /* instavote/vote: */ tcp to:10.32.0.6:80
+<pre><code>Chain KUBE-SEP-CIGDXW6UBWPOBOR6 (1 references)
+ pkts bytes target     prot opt in     out     source               destination
+    0     0 KUBE-MARK-MASQ  all  --  *      *       192.168.115.135      0.0.0.0/0
+    0     0 DNAT       tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            tcp to:192.168.115.135:80
 --
 </code></pre>
 
-<p>where the packet is being forwarded to 10.32.0.6, which should corraborate with the ip of the pod</p>
+<p>where the packet is being forwarded to 192.168.115.135, which should corroborate with the ip of the pod</p>
 <p>e.g.</p>
 <pre><code>kubectl get pods -o wide
 
 NAME         READY     STATUS    RESTARTS   AGE       IP          NODE
-vote-58bpv   1/1       Running   0          1h        10.32.0.6   k-02
-vote-986cl   1/1       Running   0          1h        10.38.0.5   k-03
-vote-9rrfz   1/1       Running   0          1h        10.38.0.4   k-03
-vote-dx8f4   1/1       Running   0          1h        10.32.0.4   k-02
-vote-qxmfl   1/1       Running   0          1h        10.32.0.5   k-02
+vote-9crwd              1/1     Running   0          44m   192.168.84.69     kube-02   &lt;none&gt;           &lt;none&gt;
+vote-pdcfk              1/1     Running   0          44m   192.168.115.135   kube-03   &lt;none&gt;           &lt;none&gt;
+vote-tpk8x              1/1     Running   0          44m   192.168.115.134   kube-03   &lt;none&gt;           &lt;none&gt;
+vote-zbpls              1/1     Running   0          44m   192.168.84.68     kube-02   &lt;none&gt;           &lt;none&gt;
 </code></pre>
 
-<p>10.32.0.6 matches ip of vote-58bpv  </p>
+<p>192.168.115.135 matches ip of vote-pdcfk</p>
 <p>to check how the packet is routed next use,</p>
 <pre><code>route -n
 </code></pre>
@@ -433,16 +435,17 @@ vote-qxmfl   1/1       Running   0          1h        10.32.0.5   k-02
 <p>[output]</p>
 <pre><code>Kernel IP routing table
 Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
-0.0.0.0         206.189.144.1   0.0.0.0         UG    0      0        0 eth0
+0.0.0.0         165.22.96.1     0.0.0.0         UG    0      0        0 eth0
 10.15.0.0       0.0.0.0         255.255.0.0     U     0      0        0 eth0
-10.32.0.0       0.0.0.0         255.240.0.0     U     0      0        0 weave
+165.22.96.0     0.0.0.0         255.255.240.0   U     0      0        0 eth0
 172.17.0.0      0.0.0.0         255.255.0.0     U     0      0        0 docker0
-206.189.144.0   0.0.0.0         255.255.240.0   U     0      0        0 eth0
-
+192.168.84.64   165.22.109.70   255.255.255.192 UG    0      0        0 tunl0
+192.168.115.128 178.128.53.126  255.255.255.192 UG    0      0        0 tunl0
+192.168.207.128 0.0.0.0         255.255.255.192 U     0      0        0 *
 </code></pre>
 
-<p>where, 10.32.0.0 is going over <strong>weave</strong> interface.</p>
-<h3 id="exposing-app-with-externalip">Exposing app with ExternalIP</h3>
+<p>where, 192.168.115.128 is going over <strong>tunl0</strong> interface created by calico.</p>
+<h2 id="exposing-app-with-externalip">Exposing app with ExternalIP</h2>
 <p>Observe the output of service list, specifically note the <strong>EXTERNAL-IP</strong> colum in the output.</p>
 <pre><code>kubectl  get svc
 </code></pre>
