@@ -14,57 +14,6 @@ The below steps are applicable for the below mentioned OS
 | --- | --- | -- |  
 | **Ubuntu** | **16.04 / 18.04** | **Xenial** |  
 
-## Base Setup
-`Skip this step if using a pre configured lab environment`
-
-**Skip this step and scroll to Initializing Master if you have setup nodes with vagrant**
-
-
-On all nodes which would be part of this cluster, you need to do the base setup as described in the following steps. To simplify this, you could also   [download and run this script](https://gist.github.com/initcron/40b71211cb693f541ce35fe3fb1adb11)
-
-### Create Kubernetes Repository
-`Skip this step if using a pre configured lab environment`
-
-
-We need to create a repository to download Kubernetes.
-
-```
-curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
-```
-```
-cat <<EOF > /etc/apt/sources.list.d/kubernetes.list
-deb http://apt.kubernetes.io/ kubernetes-xenial main
-EOF
-```
-
-
-### Installation of the packages
-`Skip this step if using a pre configured lab environment`
-
-We should update the machines before installing so that we can update the repository.
-```
-apt-get update -y
-```
-Installing all the packages with dependencies:
-```
-apt-get install -y docker.io kubelet kubeadm kubectl kubernetes-cni
-```
-```
-rm -rf /var/lib/kubelet/*
-```
-
-### Setup sysctl configs
-`Skip this step if using a pre configured lab environment`
-
-In order for many container networks to work, the following needs to be enabled on each node.
-
-```
-sysctl net.bridge.bridge-nf-call-iptables=1
-```
-The above steps has to be followed in all the nodes.
-
-`Begin from the following step if using a pre configured lab environment`
-
 
 ## Initializing Master
 
@@ -115,18 +64,18 @@ You could also put the above command on a watch to observe the nodes getting rea
 watch kubectl get nodes
 ```
 
-## Installing CNI with Weave
+## Setup Networking with Calico Plugin
 
 Installing overlay network is necessary for the pods to communicate with each other across the hosts. It is necessary to do this before you try to deploy any applications to your cluster.
 
-There are various overlay networking drivers available for kubernetes. We are going to use **Weave Net**.
+There are various overlay networking drivers available for kubernetes. We are going to use **Calico**.
 
 ```
 
-export kubever=$(kubectl version | base64 | tr -d '\n')
-kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$kubever"
-```
+kubectl apply -f https://docs.projectcalico.org/v3.11/manifests/calico.yaml
 
+
+```
 
 
 ## Validating the Setup
@@ -174,23 +123,57 @@ After the Pod networks is installled, We can install another add-on service whic
 
 Installing Dashboard:
 ```
-kubectl apply -f https://gist.githubusercontent.com/initcron/32ff89394c881414ea7ef7f4d3a1d499/raw/4863613585d05f9360321c7141cc32b8aa305605/kube-dashboard.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-beta8/aio/deploy/recommended.yaml
+
+kubectl apply -f https://gist.githubusercontent.com/initcron/a05b9609b506c6ffc6189bcf690d2304/raw/914169df84ca54c292ee0d8220339469d3bba585/dashboard-rbac.yaml
+
+
 
 ```
-This will create a pod for the Kubernetes Dashboard.
 
-
-Dashboard would be setup and available on port 31000. To access it go to the browser, and provide the  following URL
-
-`use any of your node's (VM/Server) IP here`
+You could access kubernetes Dashboard only if you have setup kubectl on your local machine.  If thats the case, setup a proxy to api server using
 
 ```
-http://NODEIP:31000
+kubectl proxy
 ```
+
+And proceed to access the dashboard by loading the following URL in your browser
+
+http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/#/login
+
+
+Then choose **Token** as authentication type.  
+
+![auth token](images/token.png)
+
+To get the token, run the following command,
+
+```
+kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboard get secret | grep admin-user | awk '{print $1}')
+```
+
+[Sample Output]
+
+```
+Name:         admin-user-token-4slg6
+Namespace:    kubernetes-dashboard
+Labels:       <none>
+Annotations:  kubernetes.io/service-account.name: admin-user
+              kubernetes.io/service-account.uid: c416ba59-86eb-440d-a85b-48000fb1e20b
+
+Type:  kubernetes.io/service-account-token
+
+Data
+====
+namespace:  20 bytes
+token:      eyJhbGciOiJSUzI1NiIsImtpZCI6IjdkWjJmaHR5UzBvd2R3c1JubFRMSHl3WTY4OXV2VUQ5ZUZHV2JpazZEMmcifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlcm5ldGVzLWRhc2hib2FyZCIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJhZG1pbi11c2VyLXRva2VuLTRzbGc2Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImFkbWluLXVzZXIiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiJjNDE2YmE1OS04NmViLTQ0MGQtYTg1Yi00ODAwMGZiMWUyMGIiLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6a3ViZXJuZXRlcy1kYXNoYm9hcmQ6YWRtaW4tdXNlciJ9.BkGm69kZ5xmc_hF5bqOT7Dr4IWmXjUQxnjBYujJzMYz2iiI7wLIaZ4Kh-Li77C3KViKJ3WMY3R6gqarGo8SIRIdvI2fMuW5eIVcVs_q_lL3M0mLnUQDtkv-BqW80JRGAzzE2CXyFrtZOy7fr4nWh_9GAT78uQoIamkwiGgzc2tb8mGXBLxMWIJrsI_xXJ5231IZQX0aCarQhs2NNa5yV3hNGvxaEzG8Pxh0cjd4Ve8bKxNwkhsaMD5set5thd9DNx6kMNQIhc1978pu2Gq2dmuRW7J6XrC3KOx2wOBX4oeYrzCsTr1LS1fVNNSSI7BIepv5p5xhKrvsCPzKKevgPGg
+ca.crt:     1025 bytes
+```
+Copy over the token and complete authentication process to access  the dashboard.
 
 The Dashboard Looks like:
 
-![Kubernetes Dashboard.\label{fig:captioned_image}](images/Kubernetes-Dashboard.png)
+![Kubernetes Dashboard.\label{fig:captioned_image}](images/dashboard-2020.png)
 
 
 ## Set up Visualiser
@@ -200,8 +183,9 @@ Fork the repository and deploy the visualizer on kubernetes
 
 ```
 git clone  https://github.com/schoolofdevops/kube-ops-view
-kubectl apply -f kube-ops-view/deploy/
-
+cd kube-ops-view/deploy/
+kubectl apply -f auth.yaml -f deployment.yaml -f ingress.yaml -f service.yaml
+cd -
 ```
 
 Visualiser will run on  **32000** port. You could access it using a URL such as below and  add /#scale=2.0 or similar option where 2.0 = 200% the scale.
@@ -227,5 +211,5 @@ Before we proceed further, please checkout the code from the following git repo.
 
 `run this on the host where you have configured kubectl`
 ```
-git clone https://github.com/initcron/k8s-code.git
+git clone https://github.com/devopsfoo/k8s-code-1.git
 ```

@@ -2,17 +2,18 @@
 
 In this project , you would write definitions for deploying the vote application stack with all components/tiers which include,
 
-  * vote ui
+  * vote
   * redis
   * worker
   * db
-  * results ui
+  * result
 
-## Tasks
+## Project Description
 
-  * Create deployments for all applications
-  * Define services for each tier applicable
-  * Launch/apply the definitions
+  * Apply the deployment and service code for the applications marked as ready
+  * Complete the code for  deployments and services marked as TODO
+  * Apply the definitions that you have completed
+  * Validate the application workflow is operational by loading vote and result applications from the browser
 
 
 Following table depicts the state of readiness of the above services.
@@ -23,16 +24,46 @@ Following table depicts the state of readiness of the above services.
 | redis       | ready       | ready       |
 | worker       | TODO       | n/a       |
 | db       | ready       | ready       |
-| results       | TODO       | TODO       |
+| result       | TODO       | TODO       |
 
 
-**Specs:**
+### Apply existing code
+
+```
+git clone https://github.com/devopsfoo/k8s-code-1.git
+
+cd k8s-code/projects/instavote/dev/
+
+kubectl create namespace instavote
+
+kubectl config set-context --current --namespace=instavote
+
+kubectl apply -f vote-rs.yaml -f vote-svc.yaml
+kubectl apply -f redis-deploy.yaml -f redis-svc.yaml
+kubectl apply -f db-deploy.yaml -f db-svc.yaml
+```
+
+validate
+
+```
+kubectl get all
+```
+Where you should see,
+
+  * replicaset and service for vote app created
+  * deployments and services for redis and db created
+
+If you see the above objects, proceed with the next task.
+
+### Completing Code for worker and result apps
+
+You would find the files available in the same directory as above i.e. *k8s-code/projects/instavote/dev/* with either partial or blank code. Your job is to complete the deployment and service yaml specs and apply those. While writing the specs, you could refer to the following specification.  
 
   * worker
     * image: schoolofdevops/worker:latest
   * results
     * image: schoolofdevops/vote-result
-    * port: 80
+    * application port: 80
     * service type: NodePort
 
 
@@ -40,37 +71,22 @@ Following table depicts the state of readiness of the above services.
 #### To Validate:
 
 ```
-kubectl get svc -n instavote
+kubectl get all
 ```
-Sample Output is:
-```
-kubectl get service vote
-NAME         CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
-vote   10.97.104.243   <pending>     80:30000/TCP   1h
-```
-Here the port assigned is 31808, go to the browser and enter
-```
-masterip:30000
-```
+
+The above command should show,
+  * five deployments and four services created
+  * services for vote and result app should have been exposed with NodePort
+
+Find out the NodePort for vote and service apps and load those from your browser.
+
 
 ![Front-End.\label{fig:captioned_image}](images/vote-rc.png)
 
-This will load the page where you can vote.
+This is how the vote application should look like.
 
-To check the result:
-```
-kubectl get service result
-```
-Sample Output is:
-```
-kubectl get service result
-NAME      CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
-result    10.101.112.16   <pending>     80:30100/TCP   1h
-```
-Here the port assigned is 32511, go to the browser and enter
-```
-masterip:30100
-```
 ![Result Page.\label{fig:captioned_image}](images/Result.png)
 
-This is the page where you should see the results for the vote application stack.
+Above is how the result app should look like.
+
+Final validation is, if you submit the vote, you should see the results changing accordingly. You would see this behavior only if all deployments and services are created and configured properly.
