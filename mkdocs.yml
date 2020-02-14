@@ -1,33 +1,33 @@
 site_name: Orchestrating Microservices with Kubernetes
 pages:
   - Home: "index.md"
-  - Just Enough Docker:
-     - Lab D101 - Operating Containers: "operating-containers.md"
-     - Lab D102 - Building and Publishing Docker Images: "dockerizing-voteapp.md"
-     - Lab D103 - Docker Networking: "docker-networking.md"
-     - Lab D104 - Docker Volumes: "docker-volumes.md"
-  - Kubernetes Fundamentals:
-     - Lab K101 - Setup Kubernetes Cluster: "3_install_kubernetes.md"
-     - Lab K102 - Kubernetes Quickdive: "quickdive.md"
-     - Lab K103 - Kubernetes LaunchPods: "5-vote-deploying_pods.md"
-     - Lab K104 - Adding HA and Scalability with ReplicaSets: "replication.md"
-     - Lab K105 - Load Balancing and Service Discovery with Services: "7-vote-exposing_app_with_service.md"
-     - Lab K106 - Defining Release Strategy with Deployments: "6-vote-kubernetes_deployment.md"
-     - Mini Project: "11_deploying_sample_app.md"
-     - Lab K107 - Configurations Management with ConfigMaps: "9-vote-configmaps_and_secrets.md"
-     - Lab K108 - Peristent Volumes: "vote-persistent-volumes.md"
-  - Advanced Administration:
-     - Lab K201 - Application Routing with Ingress Controllers : "ingress.md"
+  - Docker Pre Reqs:
+     - Lab DP101 - Operating Containers: "operating-containers.md"
+     - Lab DP102 - Building and Publishing Docker Images: "dockerizing-voteapp.md"
+     - Lab DP103 - Docker Networking: "docker-networking.md"
+     - Lab DP104 - Docker Volumes: "docker-volumes.md"
+  - Kubernetes Pre Reqs:
+     - Lab KP102 - Kubernetes Quickdive: "quickdive.md"
+     - Lab KP103 - Kubernetes LaunchPods: "5-vote-deploying_pods.md"
+     - Lab KP104 - Adding HA and Scalability with ReplicaSets: "replication.md"
+  - Kubernetes for Devs:
+     - Lab KD101 - Setup Kubernetes Cluster: "3_install_kubernetes.md"
+     - MP001 - Mini Project: "11_deploying_sample_app.md"
+     - Lab KD102 - Load Balancing and Service Discovery with Services: "7-vote-exposing_app_with_service.md"
+     - Lab KD103 - Application Routing with Ingress Controllers : "ingress.md"
+     - Lab KD104 - Peristent Volumes: "vote-persistent-volumes.md"
+     - Lab KD105 - Creating Replicated Redis Cluster with Statefulsets: "13_redis_statefulset.md"
+     - Lab KD106 - Configurations Management with ConfigMaps: "9-vote-configmaps_and_secrets.md"
+     - Lab KD107 - Monitoring, Metrics and HELM: "helm.md"
+     - Lab KD108 - Access Control with Network Policies: "network_policies.md"
+     - Lab KD109 - Default Release Strategy with Deployments: "6-vote-kubernetes_deployment.md"
+     - LAB KD110 - Additional Release Strategies: "vote-deployement_strategies.md"
+  - Additional Topics:
      - Lab K202 - Authentication and Authorization (RBAC): "configuring_authentication_and_authorization.md"
      - Lab K203 - Advanced Pod Scheduling: "advanced_pod_scheduling.md"
      - Lab K204 - Adding health checks with Probes: "pods-health-probes.md"
-     - Lab K205 - Monitoring setup with HELM: "helm.md"
      - Lab K206 - Auto Scaling Capacity with HPA : "10_kubernetes_autoscaling.md"
-     - Lab K207 - Access Control with Network Policies: "network_policies.md"
      - Lab K208 - Cluster Administration: "cluster-administration.md"
-  - Additional Topics:
-     - Creating Replicated Redis Cluster with Statefulsets: "13_redis_statefulset.md"
-     - Building Deployment Strategies: "vote-deployement_strategies.md"
      - Troubleshooting Tips: "12_troubleshooting.md"
      - Logging: "logging.md"
   - Exercises:
