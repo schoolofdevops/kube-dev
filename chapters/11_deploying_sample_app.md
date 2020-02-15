@@ -30,7 +30,7 @@ Following table depicts the state of readiness of the above services.
 ### Apply existing code
 
 ```
-git clone https://github.com/devopsfoo/k8s-code-1.git
+git clone https://github.com/devopsfoo/k8s-code.git
 
 cd k8s-code/projects/instavote/dev/
 

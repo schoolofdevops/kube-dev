@@ -15,7 +15,7 @@ pages:
      - MP001 - Mini Project: "11_deploying_sample_app.md"
      - Lab KD102 - Load Balancing and Service Discovery with Services: "7-vote-exposing_app_with_service.md"
      - Lab KD103 - Application Routing with Ingress Controllers : "ingress.md"
-     - Lab KD104 - Peristent Volumes: "vote-persistent-volumes.md"
+     - Lab KD104 - Persistent Volumes: "vote-persistent-volumes.md"
      - Lab KD105 - Creating Replicated Redis Cluster with Statefulsets: "13_redis_statefulset.md"
      - Lab KD106 - Configurations Management with ConfigMaps: "9-vote-configmaps_and_secrets.md"
      - Lab KD107 - Monitoring, Metrics and HELM: "helm.md"

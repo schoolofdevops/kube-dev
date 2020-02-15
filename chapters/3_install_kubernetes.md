@@ -211,5 +211,5 @@ Before we proceed further, please checkout the code from the following git repo.
 
 `run this on the host where you have configured kubectl`
 ```
-git clone https://github.com/devopsfoo/k8s-code-1.git
+git clone https://github.com/devopsfoo/k8s-code.git
 ```

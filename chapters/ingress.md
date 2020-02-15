@@ -41,21 +41,16 @@ kubectl apply -f https://raw.githubusercontent.com/containous/traefik/v1.7/examp
 
 Validate
 ```
-kubectl get svc,ds,pods -n kube-system  --selector='k8s-app=traefik-ingress-lb'
+kubectl get svc,ds,pods -n kube-system  | grep -i traefik
 ```
 
-[output]
+[sample output]
 
 ```
-NAME                              TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)           AGE
-service/traefik-ingress-service   ClusterIP   10.109.182.203   <none>        80/TCP,8080/TCP   11h
-
-NAME                                              DESIRED   CURRENT   READY     UP-TO-DATE   AVAILABLE   NODE SELECTOR   AGE
-daemonset.extensions/traefik-ingress-controller   2         2         2         2            2           <none>          11h
-
-NAME                                   READY     STATUS    RESTARTS   AGE
-pod/traefik-ingress-controller-bmwn7   1/1       Running   0          11h
-pod/traefik-ingress-controller-vl296   1/1       Running   0          11h
+service/traefik-ingress-service   ClusterIP   10.102.73.90   <none>        80/TCP,8080/TCP          72s
+daemonset.apps/traefik-ingress-controller   2         2         2       2            2           <none>                        72s
+pod/traefik-ingress-controller-gnfwt           1/1     Running   0          71s
+pod/traefik-ingress-controller-sxts6           1/1     Running   0          71s
 ```
 
 You would notice that the ingress controller is started on all nodes (except managers). Visit any of the nodes 8080 port e.g. http://IPADDRESS:8080 to see  traefik's management UI.
@@ -86,28 +81,30 @@ In order to achieve this you, as a user would create a **ingress** object with a
 `file: vote-ing.yaml`
 
 ```
+---
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: vote
+  namespace: instavote
   annotations:
     kubernetes.io/ingress.class: traefik
 spec:
   rules:
-    - host: vote.example.com
-      http:
-        paths:
-          - path: /
-            backend:
-              serviceName: vote
-              servicePort: 80
-    - host: results.example.com
-      http:
-        paths:
-          - path: /
-            backend:
-              serviceName: results
-              servicePort: 80
+  - host: vote.example.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: vote
+          servicePort: 80
+  - host: results.example.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: results
+          servicePort: 80
 ```
 
 And apply
@@ -116,6 +113,9 @@ And apply
 kubectl get ing
 kubectl apply -f vote-ing.yaml --dry-run
 kubectl apply -f vote-ing.yaml
+
+kubectl get ing
+kubectl describe ing vote
 ```
 
 Since the ingress controller  is constantly monitoring for the ingress objects, the moment it detects, it connects with traefik and creates a rule as follows.
@@ -196,98 +196,6 @@ And then access the app urls using http://vote.example.com or http://results.exa
 ![Name Based Routing](../images/domain-name.png)
 
 
-
-### Adding HTTP Authentication with Annotations
-
-
-#### Creating htpasswd spec as Secret   
-
-
-```
-apt install -yq apache2-utils
-htpasswd -c auth devops
-```
-
-
-Or use [Online htpasswd generator](http://www.htaccesstools.com/htpasswd-generator/) to generate a htpasswd spec. if you use the online generator, copy the contents to a file by name `auth` in the current directory.
-
-Then generate the secret as,
-
-```
-kubectl create secret generic mysecret --from-file auth
-
-kubectl get secret
-
-kubectl describe secret mysecret
-```
-
-And then add annotations to the ingress object so that it is read by the ingress controller to update configurations.
-
-`file: vote-ing.yaml`
-
-```
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: vote
-  annotations:
-    kubernetes.io/ingress.class: traefik
-    ingress.kubernetes.io/auth-type: "basic"
-    ingress.kubernetes.io/auth-secret: "mysecret"
-spec:
-  rules:
-    - host: vote.example.com
-      http:
-        paths:
-          - path: /
-            backend:
-              serviceName: vote
-              servicePort: 82
-    - host: results.example.com
-      http:
-        paths:
-          - path: /
-            backend:
-              serviceName: results
-              servicePort: 81
-
-```
-
-where,
-
-  *  *ingress.kubernetes.io/auth-type: "basic"* defines authentication type that needs to be added.
-  *  *ingress.kubernetes.io/auth-secret: "mysecret"* refers to the secret created earlier.
-
-apply
-
-```
-kubectl apply -f vote-ing.yaml
-kubectl get ing/vote -o yaml
-```
-
-Observe the annotations field. No sooner than you apply this spec, ingress controller reads the event and a basic http authentication is set with the secret you added.
-
-
-```bash
-
-                      +----------+
-       +--update----> | traefik  |
-       |              |  configs |
-       |              +----------+
-  +----+----+--+            ^
-  | ingress    |            :
-  | controller |            :
-  +----+-------+            :
-       |              +-----+-------+
-       +---watch----> | ingress     | <------- user
-                      | annotations |
-                      +-------------+
-```
-
-And if you visit traefik's dashboard and go to the details tab, you should see the basic authentication section enabled as in the diagram below.
-
-
-![Name Based Routing](../images/domain-name.png)
 
 
 
