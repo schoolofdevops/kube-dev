@@ -88,8 +88,13 @@ Currently, this can be done by using immutable configMaps.
   * Update deployment spec to use the new version of the configMaps. This will ensure immediate update.
 
 
-## Adding HTTP Authentication with Secrets
+## Enabling HTTP Authentication for Traefik  with Secrets
 
+In this part of the lab, you will
+
+  * Create a secret with an existing file
+  * Modify a ingress rule to use that secret via annotations
+  * Validate if traefik, the ingress controller, automatically picks up the configurations and enables http auth s
 
 Lets create  htpasswd spec as Secret   
 

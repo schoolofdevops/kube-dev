@@ -1,4 +1,4 @@
-# Steps to set up NFS based Persistent Volumes
+# Dynamic Storage Provisioning 
 
 This tutorial explains how kubernetes storage works and the complete workflow for the dynamic provisioning. The topics include
 
