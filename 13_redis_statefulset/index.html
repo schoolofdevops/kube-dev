@@ -117,7 +117,7 @@
                 </li>
                 <li class="">
                     
-    <a class="" href="../vote-persistent-volumes/">Lab KD104 - Persistent Volumes</a>
+    <a class="" href="../vote-persistent-volumes/">Lab KD104 - Dynamic Storage Provisioning</a>
                 </li>
                 <li class=" current">
                     
@@ -444,7 +444,7 @@ connected
 28
 </code></pre>
 
-<p>This validated the redis master slave configuration. </p>
+<p>This validated the redis master slave configuration.</p>
 <h2 id="nano-project-configuring-persistent-volume-claim-per-instance-of-redis">Nano Project: Configuring persistent volume claim per instance of redis</h2>
 <p>Similar to databases, each redis instance needs its own data store, which should also be persistent. Current code that you have applied uses emptyDir as the volume type. This is a problem as emptyDir gets deleted when the pod is deleted, and is not persistent.    </p>
 <p>Your task is to update the YAML file for the statefulset  with the following changes,</p>
@@ -477,7 +477,7 @@ connected
         <a href="../9-vote-configmaps_and_secrets/" class="btn btn-neutral float-right" title="Lab KD106 - Configurations Management with ConfigMaps">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../vote-persistent-volumes/" class="btn btn-neutral" title="Lab KD104 - Persistent Volumes"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../vote-persistent-volumes/" class="btn btn-neutral" title="Lab KD104 - Dynamic Storage Provisioning"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
