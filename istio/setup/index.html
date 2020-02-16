@@ -159,15 +159,15 @@
     
         <ul>
         
-            <li><a class="toctree-l4" href="#install-istio">Install Istio</a></li>
+            <li><a class="toctree-l4" href="#install-istio-control-plane">Install Istio Control Plane</a></li>
         
             <li><a class="toctree-l4" href="#nano-project-expose-istio-services-with-nodeport">Nano Project: Expose istio services with NodePort</a></li>
-        
-            <li><a class="toctree-l4" href="#enable-envoy-proxy-for-existing-namespace">Enable envoy proxy for existing namespace</a></li>
         
             <li><a class="toctree-l4" href="#deploy-bookinfo-sample-app">Deploy bookinfo sample app</a></li>
         
             <li><a class="toctree-l4" href="#exposing-bookinfo-app-from-outside">Exposing bookinfo app from outside</a></li>
+        
+            <li><a class="toctree-l4" href="#apply-destination-rules">Apply Destination Rules</a></li>
         
         </ul>
     
@@ -327,7 +327,7 @@ prometheus      instavote       1               2020-02-15 06:54:00.177788896 +0
 helm uninstall grafana
 </code></pre>
 
-<h2 id="install-istio">Install Istio</h2>
+<h2 id="install-istio-control-plane">Install Istio Control Plane</h2>
 <p>Download and install version 1.4.4. of istio using istioctl utility as,</p>
 <pre><code>cd ~
 curl -L https://istio.io/downloadIstio | sh -
@@ -393,10 +393,6 @@ zipkin                   ClusterIP      10.105.49.167    &lt;none&gt;        941
 <li>tracing</li>
 <li>kiali</li>
 </ul>
-<h2 id="enable-envoy-proxy-for-existing-namespace">Enable envoy proxy for existing namespace</h2>
-<pre><code>kubectl label namespace instavote  istio-injection=enabled
-</code></pre>
-
 <h2 id="deploy-bookinfo-sample-app">Deploy bookinfo sample app</h2>
 <p>To deploy a sample microservices app <a href="https://istio.io/docs/examples/bookinfo/">bookinfo</a>, first create a bookinfo namespace and switch to it.</p>
 <pre><code>kubectl create namespace bookinfo
@@ -508,6 +504,9 @@ istio-ingressgateway   LoadBalancer   10.100.139.2   &lt;pending&gt;     15020:3
 <p>Alternately you could use the hostname/fqdn of the host if you know it.</p>
 <p>If you load this url in the browser, you should see the product page for bookinfo app as,</p>
 <p><img alt="bookinfo product page" src="../../images/bookinfo.png" /></p>
+<h2 id="apply-destination-rules">Apply Destination Rules</h2>
+<pre><code>kubectl apply -f samples/bookinfo/networking/destination-rule-all.yaml
+</code></pre>
               
             </div>
           </div>
