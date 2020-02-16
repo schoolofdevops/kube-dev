@@ -22,6 +22,9 @@ pages:
      - Lab KD108 - Access Control with Network Policies: "network_policies.md"
      - Lab KD109 - Default Release Strategy with Deployments: "6-vote-kubernetes_deployment.md"
      - LAB KD110 - Additional Release Strategies: "vote-deployement_strategies.md"
+  - Service Mesh:
+     - Lab SM101 - Setup Istio Service Mesh: "istio/setup.md"
+     - Lab SM102 - Power of Istio Labs: "istio/labs.md"
   - Additional Topics:
      - Lab K202 - Authentication and Authorization (RBAC): "configuring_authentication_and_authorization.md"
      - Lab K203 - Advanced Pod Scheduling: "advanced_pod_scheduling.md"
