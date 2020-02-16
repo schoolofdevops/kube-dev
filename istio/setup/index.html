@@ -174,6 +174,10 @@
 
     </ul>
                 </li>
+                <li class="">
+                    
+    <a class="" href="../labs/">Lab SM102 - Power of Istio Labs</a>
+                </li>
     </ul>
 	    </li>
           
@@ -508,6 +512,11 @@ istio-ingressgateway   LoadBalancer   10.100.139.2   &lt;pending&gt;     15020:3
 <p><img alt="bookinfo product page" src="../../images/bookinfo.png" /></p>
 <h2 id="apply-destination-rules">Apply Destination Rules</h2>
 <pre><code>kubectl apply -f samples/bookinfo/networking/destination-rule-all.yaml
+
+kubectl get dr
+
+kubectl describe dr rating
+
 </code></pre>
               
             </div>
@@ -516,7 +525,7 @@ istio-ingressgateway   LoadBalancer   10.100.139.2   &lt;pending&gt;     15020:3
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../../configuring_authentication_and_authorization/" class="btn btn-neutral float-right" title="Lab K202 - Authentication and Authorization (RBAC)">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../labs/" class="btn btn-neutral float-right" title="Lab SM102 - Power of Istio Labs">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
         <a href="../../vote-deployement_strategies/" class="btn btn-neutral" title="LAB KD110 - Additional Release Strategies"><span class="icon icon-circle-arrow-left"></span> Previous</a>
@@ -548,7 +557,7 @@ istio-ingressgateway   LoadBalancer   10.100.139.2   &lt;pending&gt;     15020:3
         <span><a href="../../vote-deployement_strategies/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../../configuring_authentication_and_authorization/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../labs/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
