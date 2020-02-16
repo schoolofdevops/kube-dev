@@ -167,6 +167,8 @@
         
             <li><a class="toctree-l4" href="#deploy-bookinfo-sample-app">Deploy bookinfo sample app</a></li>
         
+            <li><a class="toctree-l4" href="#exposing-bookinfo-app-from-outside">Exposing bookinfo app from outside</a></li>
+        
         </ul>
     
 
@@ -456,6 +458,56 @@ replicaset.apps/reviews-v3-68964bc4c8       1         1         1       70s
 <li>reviews-v3</li>
 </ul>
 <p>You would also see each of the pod is running atleast 2 pods, that validates that envoy proxy is been injected along with each of your application.  If you see these services running, you have a working istio cluster with a sample app running on top of your kubernetes environment.</p>
+<h2 id="exposing-bookinfo-app-from-outside">Exposing bookinfo app from outside</h2>
+<p>Istio has its own way of handling traffic and exposing it outside. Istio creates two difference resources which are equivalent of what kubernetes service offers.<br />
+  * Gateway
+  * VirtualService</p>
+<p>To expose the bookinfo application externally, create and examine gateway and VirtualService as,</p>
+<pre><code>kubectl apply -f samples/bookinfo/networking/bookinfo-gateway.yaml
+
+</code></pre>
+
+<p>validate</p>
+<pre><code>kubectl get virtualservice,gateway
+
+or
+
+istioctl get all
+</code></pre>
+
+<p>Observe the output of  following</p>
+<pre><code>kubectl describe gateway bookinfo
+kubectl describe virtualservice bookinfo
+</code></pre>
+
+<p>To access this application, you need to know the following two things,</p>
+<ul>
+<li>IP Address/Hostname of host which is running Ingress Gateway</li>
+<li>NodePort mapping to port 80 for Ingress Gateway</li>
+</ul>
+<p>Use the following commands and note down the IP Address/Hostname and NodePort for ingress</p>
+<pre><code>kubectl get pod -l istio=ingressgateway -n istio-system -o jsonpath='{.items[0].status.hostIP}'
+
+kubectl get svc -l istio=ingressgateway -n istio-system
+</code></pre>
+
+<p>[sample output]</p>
+<pre><code>kubectl get pod -l istio=ingressgateway -n istio-system -o jsonpath='{.items[0].status.hostIP}'
+178.128.53.126
+
+
+kubectl get svc -l istio=ingressgateway -n istio-system
+
+NAME                   TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)                                                                                                                      AGE
+istio-ingressgateway   LoadBalancer   10.100.139.2   &lt;pending&gt;     15020:31152/TCP,80:32201/TCP,443:32595/TCP,15029:30669/TCP,15030:32260/TCP,15031:31472/TCP,15032:30961/TCP,15443:31147/TCP   8h
+</code></pre>
+
+<p>In the example above, IP address of my ingress host is 178.128.53.126 and NodePort mapping to 80 is 32201.</p>
+<p>Now to access bookinfo frontend app, I would construct a url as follows</p>
+<p>http://178.128.53.126:32201/productpage</p>
+<p>Alternately you could use the hostname/fqdn of the host if you know it.</p>
+<p>If you load this url in the browser, you should see the product page for bookinfo app as,</p>
+<p><img alt="bookinfo product page" src="../../images/bookinfo.png" /></p>
               
             </div>
           </div>
