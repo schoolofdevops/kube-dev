@@ -8,7 +8,7 @@
   
   
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>Lab KD105 - Creating Replicated Redis Cluster with Statefulsets - Orchestrating Microservices with Kubernetes</title>
+  <title>Lab KD106 - Creating Replicated Redis Cluster with Statefulsets - Orchestrating Microservices with Kubernetes</title>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
   <link rel="stylesheet" href="../css/theme.css" type="text/css" />
@@ -17,7 +17,7 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Lab KD105 - Creating Replicated Redis Cluster with Statefulsets";
+    var mkdocs_page_name = "Lab KD106 - Creating Replicated Redis Cluster with Statefulsets";
     var mkdocs_page_input_path = "13_redis_statefulset.md";
     var mkdocs_page_url = null;
   </script>
@@ -119,9 +119,13 @@
                     
     <a class="" href="../vote-persistent-volumes/">Lab KD104 - Dynamic Storage Provisioning</a>
                 </li>
+                <li class="">
+                    
+    <a class="" href="../9-vote-configmaps_and_secrets/">Lab KD105 - Configurations Management with ConfigMaps</a>
+                </li>
                 <li class=" current">
                     
-    <a class="current" href="./">Lab KD105 - Creating Replicated Redis Cluster with Statefulsets</a>
+    <a class="current" href="./">Lab KD106 - Creating Replicated Redis Cluster with Statefulsets</a>
     <ul class="subnav">
             
     <li class="toctree-l3"><a href="#deploying-redis-cluster-with-statefulsets">Deploying Redis Cluster with StatefulSets</a></li>
@@ -140,10 +144,6 @@
     
 
     </ul>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../9-vote-configmaps_and_secrets/">Lab KD106 - Configurations Management with ConfigMaps</a>
                 </li>
                 <li class="">
                     
@@ -301,7 +301,7 @@
         
       
     
-    <li>Lab KD105 - Creating Replicated Redis Cluster with Statefulsets</li>
+    <li>Lab KD106 - Creating Replicated Redis Cluster with Statefulsets</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -344,9 +344,11 @@ spec:
     role: master
 </code></pre>
 
-<p>Observe
-  * clusterIP value is set to None
-  * selector has been updated to send traffic only to the master</p>
+<p>Observe</p>
+<ul>
+<li>clusterIP value is set to None</li>
+<li>selector has been updated to send traffic only to the master</li>
+</ul>
 <p>now apply this and validate</p>
 <pre><code>kubectl apply -f redis-svc.yml
 
@@ -489,10 +491,10 @@ connected
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../9-vote-configmaps_and_secrets/" class="btn btn-neutral float-right" title="Lab KD106 - Configurations Management with ConfigMaps">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../helm/" class="btn btn-neutral float-right" title="Lab KD107 - Monitoring, Metrics and HELM">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../vote-persistent-volumes/" class="btn btn-neutral" title="Lab KD104 - Dynamic Storage Provisioning"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../9-vote-configmaps_and_secrets/" class="btn btn-neutral" title="Lab KD105 - Configurations Management with ConfigMaps"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -518,10 +520,10 @@ connected
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../vote-persistent-volumes/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../9-vote-configmaps_and_secrets/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../9-vote-configmaps_and_secrets/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../helm/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
