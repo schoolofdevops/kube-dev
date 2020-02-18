@@ -175,7 +175,7 @@
         
             <li><a class="toctree-l4" href="#lab-log-collection">Lab : Log Collection</a></li>
         
-            <li><a class="toctree-l4" href="#lab-telemetry-with-kiali">Lab : Telemetry with Kiali</a></li>
+            <li><a class="toctree-l4" href="#lab-telemetry-with-kiali-and-jaeger">Lab : Telemetry with Kiali and Jaeger</a></li>
         
         </ul>
     
@@ -323,23 +323,30 @@
 <li><a href="https://istio.io/docs/concepts/traffic-management/">Traffic Management</a>: Explains whats Virtual Services, Destination Rules, Gateways, Service Entries, Sidecars</li>
 <li><a href=""></a></li>
 <li><a href=""></a></li>
-<li><a href=""></a></li>
-<li><a href=""></a></li>
-<li><a href=""></a></li>
 </ul>
 <h2 id="lab-request-routing">Lab: Request Routing</h2>
-<p><a href="https://istio.io/docs/tasks/traffic-management/request-routing/">Request Routing Lab </a></p>
-<p><strong>Steps</strong>:
-  * Create virtual services for all apps
-  * Route all traffic to v1
-  * Route traffic to v2 only for jason user</p>
+<ul>
+<li><a href="https://istio.io/docs/tasks/traffic-management/request-routing/">Request Routing Lab </a></li>
+</ul>
+<p><strong>Steps</strong>:</p>
+<ul>
+<li>Create virtual services for all apps</li>
+<li>Route all traffic to v1</li>
+<li>Route traffic to v2 only for jason user</li>
+</ul>
 <h2 id="lab-fault-injection">Lab: Fault Injection</h2>
-<p><a href="https://istio.io/docs/tasks/traffic-management/fault-injection/">Fault Injection Lab</a></p>
-<p><strong>Steps</strong>
-  * inject a <strong>7s delay</strong> between reviews/v2 || ratings service, only for user jason.  Analyse what happens and possible solutions.
-  * inject <strong>http abort</strong> fault between reviews/v2 || rating service, for user jason.</p>
+<ul>
+<li><a href="https://istio.io/docs/tasks/traffic-management/fault-injection/">Fault Injection Lab</a></li>
+</ul>
+<p><strong>Steps</strong></p>
+<ul>
+<li>inject a <strong>7s delay</strong> between reviews/v2 || ratings service, only for user jason.  Analyse what happens and possible solutions.</li>
+<li>inject <strong>http abort</strong> fault between reviews/v2 || rating service, for user jason.</li>
+</ul>
 <h2 id="lab-traffic-shifting-ab-testing">Lab: Traffic Shifting (A/B Testing)</h2>
-<p><a href="https://istio.io/docs/tasks/traffic-management/traffic-shifting/">A/B Testing Lab</a></p>
+<ul>
+<li><a href="https://istio.io/docs/tasks/traffic-management/traffic-shifting/">A/B Testing Lab</a></li>
+</ul>
 <p><strong>Steps:</strong>
   * Apply default rule to send 100% traffic to v1
   * Add weights so that 50% goes to v3 (needs 15 refreshs or more for proper distribution of traffic)
@@ -358,15 +365,24 @@
 <li>Observe dashboards created by Grafana</li>
 </ul>
 <h2 id="lab-log-collection">Lab : Log Collection</h2>
-<p><a href="https://istio.io/docs/tasks/observability/logs/collecting-logs/">Log Collection Lab</a></p>
-<p><strong>Components:</strong>
-  * instance
-  * handler
-  * rule</p>
-<h2 id="lab-telemetry-with-kiali">Lab : Telemetry with Kiali</h2>
-<p><a href="https://istio.io/docs/tasks/observability/kiali/">Kiali Lab</a></p>
 <ul>
-<li><a href=""></a></li>
+<li><a href="https://istio.io/docs/tasks/observability/logs/collecting-logs/">Log Collection Lab</a></li>
+</ul>
+<p><strong>Components:</strong></p>
+<ul>
+<li>instance</li>
+<li>handler</li>
+<li>rule</li>
+</ul>
+<h2 id="lab-telemetry-with-kiali-and-jaeger">Lab : Telemetry with Kiali and Jaeger</h2>
+<ul>
+<li><a href="https://istio.io/docs/tasks/observability/kiali/">Kiali Lab</a></li>
+<li>
+<p><a href="https://istio.io/docs/tasks/observability/distributed-tracing/jaeger/">Jaeger Lab</a></p>
+</li>
+<li>
+<p><a href=""></a></p>
+</li>
 <li><a href=""></a></li>
 <li><a href=""></a></li>
 </ul>
