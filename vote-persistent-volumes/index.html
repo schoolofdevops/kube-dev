@@ -438,7 +438,7 @@ kubectl get pods
 <p>You could follow these steps to complete this task
   * create a pvc by name <strong>redis</strong>
   * create a volume in the pod spec with type persistentVolumeClaim. Call is <strong>redis-data</strong>
-  * create volumeMounts spec to the container running redis and have it mount **redis</p>
+  * add volumeMounts to the container spec (part of the same deployment file) running redis and have it mount <strong>redis-data</strong> volume created in the pod spec above.</p>
 <h4 id="summary">Summary</h4>
 <p>In this lab, you not only setup dynamic provisioning using NFS, but also learnt about statefulsets as well as rbac policies applied to the nfs provisioner.</p>
               
